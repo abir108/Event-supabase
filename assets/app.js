@@ -1,3 +1,13 @@
+// This page must always act as a pure anonymous visitor, even if this
+// browser previously logged into the staff console (staff.html shares the
+// same origin, so a staff session in localStorage would otherwise "leak"
+// into this page and make Supabase send the staff's auth token instead of
+// the anon key — the `authenticated` role has no INSERT policy on `leads`,
+// so registrations would silently fail with an RLS error).
+const publicClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+});
+
 const form = document.getElementById("lead-form");
 const errorEl = document.getElementById("form-error");
 const submitBtn = document.getElementById("submit-btn");
@@ -79,7 +89,7 @@ async function insertLeadWithUniqueToken(name, phone, email) {
     // No .select() here: public visitors only have INSERT on `leads`, not
     // SELECT, so asking Postgres to hand the row back would itself be
     // denied by row-level security. We already have name/token locally.
-    const { error } = await supabaseClient
+    const { error } = await publicClient
       .from("leads")
       .insert({ name, phone, email, token });
 
