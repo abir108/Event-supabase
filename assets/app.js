@@ -9,6 +9,20 @@ const tokenNameEl = document.getElementById("token-name");
 const UNIQUE_VIOLATION = "23505";
 const MAX_ATTEMPTS = 6;
 const DUPLICATE_MESSAGE = "This phone number or email is already registered for this event.";
+const INVALID_PHONE_MESSAGE = "Please enter a valid Bangladesh mobile number, e.g. 01712345678.";
+
+// Matches 01XXXXXXXXX or +8801XXXXXXXXX (Grameenphone/Robi/Banglalink/Teletalk prefixes 3-9).
+const BD_PHONE_RE = /^(?:\+8801|01)([3-9]\d{8})$/;
+
+function normalizeBDPhone(raw) {
+  const cleaned = raw.replace(/[\s-]/g, "");
+  const match = cleaned.match(BD_PHONE_RE);
+  if (!match) return null;
+  // Store in canonical international form regardless of how it was typed,
+  // so "01712345678" and "+8801712345678" are recognized as the same
+  // number for duplicate detection.
+  return `+8801${match[1]}`;
+}
 
 function randomToken() {
   return String(Math.floor(1000 + Math.random() * 9000));
@@ -47,8 +61,15 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Submitting...";
 
   const name = form.name.value.trim();
-  const phone = form.phone.value.trim();
   const email = form.email.value.trim();
+
+  const phone = normalizeBDPhone(form.phone.value.trim());
+  if (!phone) {
+    errorEl.textContent = INVALID_PHONE_MESSAGE;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Get My Code";
+    return;
+  }
 
   try {
     const lead = await insertLeadWithUniqueToken(name, phone, email);
