@@ -10,6 +10,29 @@ const UNIQUE_VIOLATION = "23505";
 const MAX_ATTEMPTS = 6;
 const DUPLICATE_MESSAGE = "This phone number or email is already registered for this event.";
 const INVALID_PHONE_MESSAGE = "Please enter a valid Bangladesh mobile number, e.g. 1712345678.";
+const STORAGE_KEY = "ctb_event_registration";
+
+// Soft, same-device/browser check. Not a security boundary (the phone/email
+// uniqueness enforced by the database is) — this just avoids someone
+// accidentally re-submitting from the same phone, and lets them recover
+// their code if they reload the page.
+function getSavedRegistration() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveRegistration(name, token) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, token }));
+  } catch {
+    // localStorage unavailable (private mode, etc.) — nothing to do,
+    // the database-level uniqueness still protects against duplicates.
+  }
+}
 
 const phoneInput = document.getElementById("phone");
 
@@ -79,10 +102,8 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const lead = await insertLeadWithUniqueToken(name, phone, email);
-    tokenValueEl.textContent = lead.token;
-    tokenNameEl.textContent = `Nice to meet you, ${lead.name}!`;
-    formView.classList.add("hidden");
-    tokenView.classList.remove("hidden");
+    saveRegistration(lead.name, lead.token);
+    showTokenView(lead.name, lead.token, false);
   } catch (err) {
     console.error(err);
     if (err.code === UNIQUE_VIOLATION && isDuplicateContactError(err)) {
@@ -94,3 +115,19 @@ form.addEventListener("submit", async (e) => {
     submitBtn.textContent = "Get My Code";
   }
 });
+
+function showTokenView(name, token, returning) {
+  tokenValueEl.textContent = token;
+  tokenNameEl.textContent = returning
+    ? `Welcome back, ${name}! Here's your code again.`
+    : `Nice to meet you, ${name}!`;
+  formView.classList.add("hidden");
+  tokenView.classList.remove("hidden");
+}
+
+// If this browser already registered, skip straight to the code instead of
+// showing the form again (also prevents an accidental duplicate attempt).
+const saved = getSavedRegistration();
+if (saved) {
+  showTokenView(saved.name, saved.token, true);
+}
