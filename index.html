@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Get Your Gift — CloudTech Bookkeeping</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="brand">
+    <div class="logo-frame">
+      <img src="assets/logo.png" alt="CloudTech Bookkeeping" class="logo" onerror="this.parentElement.style.display='none'; document.getElementById('logo-fallback').style.display='flex';" />
+    </div>
+    <div id="logo-fallback" class="logo-fallback" style="display:none;">
+      <span class="mark"></span>
+      <span><span class="word-cloud">Cloud</span><span class="word-tech">Tech</span></span>
+    </div>
+    <span class="tagline">Event Registration</span>
+  </div>
+
+  <div class="card">
+    <div id="form-view">
+      <h1>Join us &amp; grab your gift</h1>
+      <p class="subtitle">Enter your details below. You'll get a one-time code — show it at our booth to collect your gift.</p>
+
+      <form id="lead-form">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" placeholder="Jane Doe" required autocomplete="name" />
+
+        <label for="phone">Phone number</label>
+        <input id="phone" name="phone" type="tel" placeholder="01XXXXXXXXX" required autocomplete="tel" />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" />
+
+        <button id="submit-btn" type="submit">Get My Code</button>
+        <p class="error" id="form-error"></p>
+      </form>
+    </div>
+
+    <div id="token-view" class="hidden">
+      <div class="token-display">
+        <div class="badge-check">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6L9 17l-5-5" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>You're all set!</h1>
+        <p class="subtitle" id="token-name" style="margin-bottom:0;"></p>
+        <div class="token" id="token-value">----</div>
+        <p class="subtitle">This is your one-time gift code</p>
+      </div>
+
+      <div class="instructions">
+        <div class="step">
+          <span class="num">1</span>
+          <p>Keep this screen open, or take a screenshot of your code.</p>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <p>Walk over to the CloudTech Bookkeeping booth.</p>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <p>Show your 4-digit code to our staff to claim your gift.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a class="top-link" href="staff.html">Staff &amp; admin login →</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

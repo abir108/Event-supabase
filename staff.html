@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Staff &amp; Admin — CloudTech Bookkeeping</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="brand">
+    <div class="logo-frame">
+      <img src="assets/logo.png" alt="CloudTech Bookkeeping" class="logo" onerror="this.parentElement.style.display='none'; document.getElementById('logo-fallback').style.display='flex';" />
+    </div>
+    <div id="logo-fallback" class="logo-fallback" style="display:none;">
+      <span class="mark"></span>
+      <span><span class="word-cloud">Cloud</span><span class="word-tech">Tech</span></span>
+    </div>
+    <span class="tagline">Staff &amp; Admin</span>
+  </div>
+
+  <div id="login-view" class="card">
+    <h1>Sign in</h1>
+    <p class="subtitle">For booth staff and event admins.</p>
+    <form id="login-form">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" required autocomplete="username" />
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" required autocomplete="current-password" />
+      <button type="submit">Sign In</button>
+      <p class="error" id="login-error"></p>
+    </form>
+  </div>
+
+  <div id="main-view" class="card wide hidden">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:20px;">
+      <div>
+        <h1 style="margin-bottom:2px;">Event Console</h1>
+        <p class="subtitle" style="margin-bottom:0;">Redeem gift codes and track registrations.</p>
+      </div>
+      <button class="ghost" id="logout-btn" type="button">Sign Out</button>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-btn-redeem" class="active" type="button">Redeem</button>
+      <button id="tab-btn-dashboard" type="button">Dashboard</button>
+    </div>
+
+    <!-- Redeem tab -->
+    <div id="tab-redeem">
+      <form id="lookup-form">
+        <label for="token">4-digit code</label>
+        <input id="token" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="0000" required />
+        <button type="submit">Look Up</button>
+        <p class="error" id="lookup-error"></p>
+      </form>
+
+      <div id="lead-result" class="lead-info hidden">
+        <dl>
+          <dt>Name</dt><dd id="lead-name"></dd>
+          <dt>Phone</dt><dd id="lead-phone"></dd>
+          <dt>Email</dt><dd id="lead-email"></dd>
+        </dl>
+        <span id="lead-status" class="badge"></span>
+        <button id="redeem-btn" type="button">Confirm &amp; Give Gift</button>
+      </div>
+    </div>
+
+    <!-- Dashboard tab -->
+    <div id="tab-dashboard" class="hidden">
+      <div class="stats-grid">
+        <div class="stat-card registered">
+          <div class="value" id="stat-registered">–</div>
+          <div class="label">Registered</div>
+        </div>
+        <div class="stat-card redeemed">
+          <div class="value" id="stat-redeemed">–</div>
+          <div class="label">Redeemed</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="value" id="stat-pending">–</div>
+          <div class="label">Pending</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <input id="search-input" type="text" placeholder="Search name, phone, email, or code..." />
+        </div>
+        <button class="ghost" id="refresh-btn" type="button">Refresh</button>
+        <button class="ghost" id="export-btn" type="button">Export CSV</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Code</th>
+              <th>Status</th>
+              <th>Registered</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody">
+            <tr><td colspan="6" style="color: var(--ink-muted);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <a class="top-link" href="index.html">← Back to registration</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
+  <script src="assets/staff.js"></script>
+</body>
+</html>
