@@ -9,19 +9,25 @@ const tokenNameEl = document.getElementById("token-name");
 const UNIQUE_VIOLATION = "23505";
 const MAX_ATTEMPTS = 6;
 const DUPLICATE_MESSAGE = "This phone number or email is already registered for this event.";
-const INVALID_PHONE_MESSAGE = "Please enter a valid Bangladesh mobile number, e.g. 01712345678.";
+const INVALID_PHONE_MESSAGE = "Please enter a valid Bangladesh mobile number, e.g. 1712345678.";
 
-// Matches 01XXXXXXXXX or +8801XXXXXXXXX (Grameenphone/Robi/Banglalink/Teletalk prefixes 3-9).
-const BD_PHONE_RE = /^(?:\+8801|01)([3-9]\d{8})$/;
+const phoneInput = document.getElementById("phone");
 
-function normalizeBDPhone(raw) {
-  const cleaned = raw.replace(/[\s-]/g, "");
-  const match = cleaned.match(BD_PHONE_RE);
-  if (!match) return null;
-  // Store in canonical international form regardless of how it was typed,
-  // so "01712345678" and "+8801712345678" are recognized as the same
-  // number for duplicate detection.
-  return `+8801${match[1]}`;
+// The +880 prefix is fixed in the UI; the field itself only holds the local
+// 10 digits: 1 followed by an operator prefix (3-9) and 8 more digits
+// (Grameenphone/Robi/Banglalink/Teletalk).
+const BD_LOCAL_RE = /^1[3-9]\d{8}$/;
+
+// Keep the field numeric-only as the user types.
+phoneInput.addEventListener("input", () => {
+  phoneInput.value = phoneInput.value.replace(/\D/g, "").slice(0, 10);
+});
+
+function normalizeBDPhone(localDigits) {
+  const cleaned = localDigits.replace(/\D/g, "");
+  if (!BD_LOCAL_RE.test(cleaned)) return null;
+  // Store in canonical international form: +8801XXXXXXXXX.
+  return `+880${cleaned}`;
 }
 
 function randomToken() {

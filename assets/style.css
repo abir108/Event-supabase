@@ -181,6 +181,41 @@ input:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(79, 214, 255, 0.18);
 }
 
+/* Fixed +880 country-code prefix attached to the phone field */
+.phone-input {
+  display: flex;
+  align-items: stretch;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(10, 12, 31, 0.55);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.phone-input:focus-within {
+  border-color: var(--cyan-400);
+  box-shadow: 0 0 0 3px rgba(79, 214, 255, 0.18);
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  padding: 13px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 1px solid var(--border);
+  user-select: none;
+}
+
+.phone-input input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+
 button {
   width: 100%;
   margin-top: 26px;

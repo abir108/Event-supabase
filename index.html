@@ -25,11 +25,13 @@
 
       <form id="lead-form">
         <label for="name">Full name</label>
-        <input id="name" name="name" type="text" placeholder="Karim Ahmed" required autocomplete="name" />
+        <input id="name" name="name" type="text" placeholder="CloudTech Bookkeeping" required autocomplete="name" />
 
         <label for="phone">Phone number</label>
-        <input id="phone" name="phone" type="tel" placeholder="01712345678" required autocomplete="tel" />
-        <p class="hint">Bangladesh mobile number, e.g. 01712345678 or +8801712345678</p>
+        <div class="phone-input">
+          <span class="phone-prefix">+880</span>
+          <input id="phone" name="phone" type="tel" inputmode="numeric" placeholder="1712345678" maxlength="10" required autocomplete="tel-national" />
+        </div>
 
         <label for="email">Email</label>
         <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" />
