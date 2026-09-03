@@ -25,9 +25,12 @@ const DISPOSABLE_EMAIL_MESSAGE = "Temporary/disposable email addresses aren't al
 const STORAGE_KEY = "ctb_event_registration";
 
 // Disify's free, keyless endpoint (30 req/min, plenty for this form) — flags
-// malformed addresses and disposable/temp-mail domains. If the check itself
-// is unreachable, we fail open rather than block a real registration over a
-// third-party outage.
+// malformed addresses, disposable/temp-mail domains, and domains with no
+// mail server configured at all (dns: false). It can't confirm the specific
+// mailbox exists (that needs paid SMTP-level verification), only that the
+// domain is real and syntax is valid. If the check itself is unreachable,
+// we fail open rather than block a real registration over a third-party
+// outage.
 async function checkEmailDeliverable(email) {
   try {
     const res = await fetch(`https://disify.com/api/email/${encodeURIComponent(email)}`);
@@ -35,6 +38,7 @@ async function checkEmailDeliverable(email) {
     const data = await res.json();
     if (data.format === false) return { ok: false, reason: "invalid" };
     if (data.disposable === true) return { ok: false, reason: "disposable" };
+    if (data.dns === false) return { ok: false, reason: "invalid" };
     return { ok: true };
   } catch {
     return { ok: true };
