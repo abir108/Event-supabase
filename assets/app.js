@@ -20,7 +20,26 @@ const UNIQUE_VIOLATION = "23505";
 const MAX_ATTEMPTS = 6;
 const DUPLICATE_MESSAGE = "This phone number or email is already registered for this event.";
 const INVALID_PHONE_MESSAGE = "Please enter a valid Bangladesh mobile number, e.g. 01712345678.";
+const INVALID_EMAIL_MESSAGE = "Please enter a valid email address.";
+const DISPOSABLE_EMAIL_MESSAGE = "Temporary/disposable email addresses aren't allowed — please use a real one.";
 const STORAGE_KEY = "ctb_event_registration";
+
+// Disify's free, keyless endpoint (30 req/min, plenty for this form) — flags
+// malformed addresses and disposable/temp-mail domains. If the check itself
+// is unreachable, we fail open rather than block a real registration over a
+// third-party outage.
+async function checkEmailDeliverable(email) {
+  try {
+    const res = await fetch(`https://disify.com/api/email/${encodeURIComponent(email)}`);
+    if (!res.ok) return { ok: true };
+    const data = await res.json();
+    if (data.format === false) return { ok: false, reason: "invalid" };
+    if (data.disposable === true) return { ok: false, reason: "disposable" };
+    return { ok: true };
+  } catch {
+    return { ok: true };
+  }
+}
 
 // Soft, same-device/browser check. Not a security boundary (the phone/email
 // uniqueness enforced by the database is) — this just avoids someone
@@ -119,6 +138,16 @@ form.addEventListener("submit", async (e) => {
     submitBtn.textContent = "Get My Code";
     return;
   }
+
+  submitBtn.textContent = "Checking email...";
+  const emailCheck = await checkEmailDeliverable(email);
+  if (!emailCheck.ok) {
+    errorEl.textContent = emailCheck.reason === "disposable" ? DISPOSABLE_EMAIL_MESSAGE : INVALID_EMAIL_MESSAGE;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Get My Code";
+    return;
+  }
+  submitBtn.textContent = "Submitting...";
 
   try {
     const lead = await insertLeadWithUniqueToken(name, phone, email);
